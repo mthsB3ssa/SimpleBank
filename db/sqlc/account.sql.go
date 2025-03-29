@@ -7,8 +7,6 @@ package db
 
 import (
 	"context"
-
-	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const createAccount = `-- name: CreateAccount :one
@@ -22,8 +20,8 @@ RETURNING id, owner, balance, created_at
 `
 
 type CreateAccountParams struct {
-	Owner   string         `json:"owner"`
-	Balance pgtype.Numeric `json:"balance"`
+	Owner   string `json:"owner"`
+	Balance int64  `json:"balance"`
 }
 
 func (q *Queries) CreateAccount(ctx context.Context, arg CreateAccountParams) (Account, error) {
@@ -43,7 +41,7 @@ DELETE FROM accounts
 WHERE id = $1
 `
 
-func (q *Queries) DeleteAccount(ctx context.Context, id int32) error {
+func (q *Queries) DeleteAccount(ctx context.Context, id int64) error {
 	_, err := q.db.Exec(ctx, deleteAccount, id)
 	return err
 }
@@ -53,7 +51,7 @@ SELECT id, owner, balance, created_at FROM accounts
 WHERE id = $1 LIMIT 1
 `
 
-func (q *Queries) GetAccount(ctx context.Context, id int32) (Account, error) {
+func (q *Queries) GetAccount(ctx context.Context, id int64) (Account, error) {
 	row := q.db.QueryRow(ctx, getAccount, id)
 	var i Account
 	err := row.Scan(
@@ -110,8 +108,8 @@ RETURNING id, owner, balance, created_at
 `
 
 type UpdateAccountParams struct {
-	ID      int32          `json:"id"`
-	Balance pgtype.Numeric `json:"balance"`
+	ID      int64 `json:"id"`
+	Balance int64 `json:"balance"`
 }
 
 func (q *Queries) UpdateAccount(ctx context.Context, arg UpdateAccountParams) (Account, error) {
