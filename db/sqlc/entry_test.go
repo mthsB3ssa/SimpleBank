@@ -20,12 +20,19 @@ func CreateRandomEntry(t *testing.T) Entry {
 }
 
 func TestCreateEntry(t *testing.T) {
+	account := CreateRandomAccount(t)
+
 	arg := CreateEntryParams{
-		
+		AccountID: account.ID,
+		Amount: utils.RandomMoney(),
 	}
 
-	entry, _ := testQueries.CreateEntry(context.Background())
-	entry.AccountID
+	entry, err := testQueries.CreateEntry(context.Background(), arg)
+	
+	require.NoError(t, err)
+	require.NotEmpty(t, entry)
+
+	require.NotEmpty(t, arg.Amount)
 }
 func TestGetEntry(t *testing.T) {
 
